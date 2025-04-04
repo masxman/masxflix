@@ -1,3 +1,4 @@
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 
 export default function Home() {
@@ -50,6 +51,32 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+
+        <SignedOut>
+          <p className="mb-4">Sign in or sign up to get started.</p>
+          <div className="flex gap-4">
+            <SignInButton mode="modal">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Sign Up
+              </button>
+            </SignUpButton>
+          </div>
+        </SignedOut>
+
+        <SignedIn>
+          <p className="mb-4">You are signed in. Explore your movies!</p>
+          {/* We will add links/buttons to other features here later */}
+          {/* Example: <Link href="/dashboard">Go to Dashboard</Link> */}
+          {/* UserButton is typically placed in the header, but added here for demonstration */}
+          {/* <div className="absolute top-4 right-4">
+            <UserButton afterSignOutUrl="/" />
+          </div> */}
+        </SignedIn>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a

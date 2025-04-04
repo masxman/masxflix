@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model linked to Clerk authentication
+model User {
+  id        String    @id @unique // Clerk User ID
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  watchlists Watchlist[]
+  ratings    Rating[]
+}
+
+// Movie model (potentially storing basic info, or just IDs referencing TMDb)
+// We might primarily rely on TMDb API and only store IDs users interact with.
+// Let's keep it simple for now and store the TMDb ID.
+model Movie {
+  id     Int       @id // TMDb Movie ID
+  title  String?   // Optional: Store title for quicker reference?
+  // Add other fields like poster_path if needed for offline/cached access
+
+  watchlistedBy Watchlist[]
+  ratedBy       Rating[]
+}
+
+// Watchlist join table (Many-to-Many User <-> Movie)
+model Watchlist {
+  userId    String
+  movieId   Int
+  addedAt   DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@id([userId, movieId]) // Composite primary key
+}
+
+// Rating model (Many-to-Many User <-> Movie with rating value)
+model Rating {
+  userId    String
+  movieId   Int
+  value     Int      // e.g., 1-10 or 1-5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@id([userId, movieId]) // Composite primary key
+}
